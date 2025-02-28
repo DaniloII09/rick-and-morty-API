@@ -1,10 +1,23 @@
-const charactersContainer = document.getElementById("characters-container");
+const searchCharactersContainer = document.getElementById(
+  "search-characters-container"
+);
+const savedCharactersContainer = document.getElementById(
+  "saved-characters-container"
+);
 const characterSearch = document.getElementById("character-search");
+const mainContentContainer = document.getElementById("main-content");
 
 let characters = [];
+let savedCharacters = [];
 
-let isEditing = false;
-let currentEditing = null;
+fetch("https://rickandmortyapi.com/api/character")
+  .then((response) => response.json())
+  .then((data) => {
+    characters = data.results;
+  })
+  .catch((error) => {
+    console.log("Error fetching data", error);
+  });
 
 const createCharacter = (
   characterImage,
@@ -20,56 +33,39 @@ const createCharacter = (
   img.alt = characterName;
   img.className = "character-image";
 
-  const nameDetail = document.createElement("p");
-  nameDetail.className = "character-detail";
-  nameDetail.innerText = "Name:";
-  const name = document.createElement("span");
-  name.className = "atribute";
-  name.innerText = characterName;
-  nameDetail.appendChild(name);
+  const createDetail = (label, value) => {
+    const detail = document.createElement("p");
+    detail.className = "character-detail";
+    detail.innerHTML = `${label}: <span class="attribute">${value}</span>`;
+    return detail;
+  };
 
-  const statusDetail = document.createElement("p");
-  statusDetail.className = "character-detail";
-  statusDetail.innerText = "Status:";
-  const status = document.createElement("span");
-  status.className = "atribute";
-  status.innerText = characterStatus;
-  statusDetail.appendChild(status);
-
-  const speciesDetail = document.createElement("p");
-  speciesDetail.className = "character-detail";
-  speciesDetail.innerText = "Species:";
-  const species = document.createElement("span");
-  species.className = "atribute";
-  species.innerText = characterSpecies;
-  speciesDetail.appendChild(species);
-
-  const deleteBtn = document.createElement("button");
-  deleteBtn.innerText = "Delete";
-  deleteBtn.addEventListener("click", () => {
-    console.log("Deleted item");
-  });
+  let button = document.createElement("button");
+  button.innerText = "Add";
+  button.className = "add-button button";
+  button.addEventListener("click", () =>
+    addCharacter(
+      card,
+      characterImage,
+      characterName,
+      characterStatus,
+      characterSpecies
+    )
+  );
 
   card.appendChild(img);
-  card.appendChild(nameDetail);
-  card.appendChild(statusDetail);
-  card.appendChild(speciesDetail);
-  card.appendChild(deleteBtn);
+  card.appendChild(createDetail("Name", characterName));
+  card.appendChild(createDetail("Status", characterStatus));
+  card.appendChild(createDetail("Species", characterSpecies));
+  card.appendChild(button);
 
   return card;
 };
 
-fetch("https://rickandmortyapi.com/api/character")
-  .then((response) => response.json())
-  .then((data) => {
-    characters = data.results;
-    displayCharacters(characters);
-  });
-
-const displayCharacters = (characters) => {
-  charactersContainer.innerHTML = "";
-  characters.forEach((character) => {
-    charactersContainer.appendChild(
+const displayCharacters = (list, container) => {
+  container.innerHTML = "";
+  list.forEach((character) => {
+    container.appendChild(
       createCharacter(
         character.image,
         character.name,
@@ -81,14 +77,52 @@ const displayCharacters = (characters) => {
 };
 
 characterSearch.addEventListener("input", (e) => {
-  console.log("Typing:", e.target.value);
   let search = e.target.value.toLowerCase();
 
-  let filteredCharacters = characters.filter((character) =>
-    character.name.toLowerCase().includes(search)
+  let filteredCharacters = characters.filter(
+    (character) =>
+      character.name.toLowerCase().includes(search) &&
+      !savedCharacters.includes(character.name)
   );
 
-  displayCharacters(filteredCharacters);
+  if (search === "") {
+    searchCharactersContainer.innerHTML = "";
+  } else {
+    if (filteredCharacters.length === 0) {
+      searchCharactersContainer.innerHTML = `
+        <p class="no-found">No characters found for the input ${search}</p>
+      `;
+    } else {
+      displayCharacters(filteredCharacters, searchCharactersContainer);
+      scrollToBottom();
+    }
+  }
 });
 
-console.log(characterSearch);
+const addCharacter = (card, image, name, status, species) => {
+  if (!savedCharacters.includes(name)) {
+    savedCharacters.push(name);
+
+    let newCharacter = createCharacter(image, name, status, species);
+    let deleteButton = newCharacter.querySelector("button");
+
+    deleteButton.innerText = "Delete";
+    deleteButton.addEventListener("click", () => {
+      deleteCharacter(newCharacter, name);
+    });
+    deleteButton.classList.replace("add-button", "delete-button");
+
+    savedCharactersContainer.appendChild(newCharacter);
+    characterSearch.value = "";
+    searchCharactersContainer.innerHTML = "";
+  }
+};
+
+const deleteCharacter = (card, name) => {
+  if (confirm("Do you want to delete this character?")) {
+    savedCharacters = savedCharacters.filter((character) => character !== name);
+    savedCharactersContainer.removeChild(card);
+    searchCharactersContainer.innerHTML = "";
+    characterSearch.value = "";
+  }
+};

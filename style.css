@@ -1,7 +1,30 @@
+* {
+  box-sizing: content-box;
+  --primary-color: #00FF00;
+  --shadow-primary-color: #00FF0080;
+  --secondary-color: #4CA1AF;
+  --shadow-secondary-color: #4CA1AF80;
+  --card-background-color: #3C3C3C;
+  --border-primary-color: solid 2px var(--primary-color);
+  --text-color: #FFFFFF;
+  --padding-standard: 20px;
+  --border-radius-standard: 15px;
+  --box-shadow-standard: 0px 4px 20px var(--shadow-primary-color);
+  --box-shadow-hover: 0px 4px 10px var(--shadow-primary-color);
+  --search-border: solid 1px var(--secondary-color);
+  --search-border-focus: solid 1px var(--primary-color);
+  --search-box-shadow: 0 8px 10px var(--shadow-secondary-color);
+  --search-box-shadow-focus: 0 8px 10px var(--shadow-primary-color);
+  --character-image-size: 150px;
+  --character-border: 3px solid var(--primary-color);
+  --character-detail-font-size: 16px;
+  --text-shadow-standard: 1px 1px 2px var(--shadow-primary-color);
+}
+
 body {
   font-family: "Courier New", Courier, monospace;
-  background: linear-gradient(#4CA1AF, #00FF00);
-  color: #FFFFFF;
+  background: linear-gradient(var(--secondary-color), var(--primary-color));
+  color: var(--text-color);
   padding: 0;
   margin: 0;
   text-align: center;
@@ -13,37 +36,40 @@ body {
 }
 
 h1 {
-  background-color: #4CA1AF;
+  background-color: var(--secondary-color);
   margin: 0;
   padding: 14px;
-  border-bottom: solid 2px #00FF00;
-  height: 8%;
+  border-bottom: var(--border-primary-color);
+  height: 5%;
 }
 
 #character-search {
   text-align: center;
   font-family: "Courier New", Courier, monospace;
-  border: solid 1px #00FF00;
-  box-shadow: 0 8px 10px #00FF0080;
+  border: var(--search-border);
+  box-shadow: var(--search-box-shadow);
   width: 50%;
   height: 22px;
 }
 
 #character-search:focus {
-  border: solid 1px #6a5acd;
-  box-shadow: 0 8px 10px #6a5acd80;
+  border: var(--search-border-focus);
+  box-shadow: var(--search-box-shadow-focus);
   outline: none;
 }
 
 .main-content {
-  overflow-y: auto;
+  height: 95%;
+  max-height: 90vh;
   scrollbar-width: thin;
-  scrollbar-color: #00FF00 #3C3C3C;
-  height: 92%;
-  padding: 20px;
+  scrollbar-color: var(--card-background-color) var(--secondary-color);
+  overflow-y: auto;
+  padding: var(--padding-standard);
+  position: relative;
 }
 
-#characters-container {
+
+.content-container {
   margin-top: 20px;
   display: flex;
   justify-content: center;
@@ -52,38 +78,78 @@ h1 {
 }
 
 .card {
-  background: #3C3C3C;
-  border: 2px solid #00FF00;
-  color: #FFFFFF;
-  border-radius: 15px;
-  box-shadow: 0px 4px 20px #00ff0080;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 350px;
+  background: var(--card-background-color);
+  border: var(--border-primary-color);
+  border-radius: var(--border-radius-standard);
+  box-shadow: var(--box-shadow-standard);
   width: 250px;
   text-align: center;
-  padding: 20px;
-  transition:
-    transform 0.3s;
+  padding: var(--padding-standard);
+  transition: transform 0.3s;
 }
 
 .card:hover {
   transform: scale(1.05);
-  box-shadow: 0px 4px 10px #00ff00cc;
+  box-shadow: var(--box-shadow-hover);
 }
 
 .character-image {
-  width: 150px;
-  height: 150px;
+  width: var(--character-image-size);
+  height: var(--character-image-size);
   border-radius: 50%;
-  border: 3px solid #00FF00;
+  border: var(--character-border);
   margin-bottom: 15px;
 }
 
 .character-detail {
-  font-size: 16px;
+  font-size: var(--character-detail-font-size);
   margin: 8px 0;
-  text-shadow: 1px 1px 2px #00ff0080;
+  text-shadow: var(--text-shadow-standard);
 }
 
 .attribute {
   font-weight: bold;
-  color: #00FF00;
+  color: var(--primary-color);
+}
+
+.button {
+  border: solid 2px var(--text-color);
+  margin-top: 10px;
+  border-radius: 7px;
+  padding: 6px;
+  width: 100px;
+  color: var(--text-color);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: var(--character-detail-font-size);
+  cursor: pointer;
+
+}
+
+.add-button {
+  background-color: var(--primary-color);
+}
+
+.add-button:hover {
+  background-color: var(--text-color);
+  color: var(--primary-color);
+  border: var(--border-primary-color);
+}
+
+.delete-button {
+  background-color: var(--secondary-color);
+}
+
+.delete-button:hover {
+  background-color: var(--text-color);
+  color: var(--secondary-color);
+  border: solid 2px var(--secondary-color);
+}
+
+.no-found {
+  color:red;
 }
